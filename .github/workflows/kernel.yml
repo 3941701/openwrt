@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Kernel for mt7621
         run: |
-          make kernel -j1 V=s | tee build.log  # Сборка с повышенной детализацией
+          make kernel KBUILD_OUTPUT=/bin -j1 V=s | tee build.log  # Сборка с повышенной детализацией
 
       - name: Upload built kernel
         uses: actions/upload-artifact@v3
