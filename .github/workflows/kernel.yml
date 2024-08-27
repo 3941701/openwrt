@@ -19,11 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # Используем ваш форк
+        uses: actions/checkout@v4
 
       - name: Set up OpenWRT build environment
         run: |
-          # Установите необходимые зависимости
           sudo apt-get update
           sudo apt-get install -y build-essential git libpcre3-dev
 
@@ -34,7 +33,8 @@ jobs:
 
       - name: Configure Kernel
         run: |
-          make kernel_menuconfig  # Настройка только ядра
+          # Используйте конфигурацию по умолчанию или заранее подготовленный .config файл
+          make defconfig  # Генерация конфигурации по умолчанию
 
       - name: Build Kernel for mt7621
         run: |
