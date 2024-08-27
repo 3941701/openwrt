@@ -9,6 +9,7 @@ on:
       - 'target/linux/ramips/mt7621/**'
     branches-ignore:
       - master
+  workflow_dispatch:  # Позволяет запускать workflow вручную
 
 permissions:
   contents: read
