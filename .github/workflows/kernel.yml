@@ -9,7 +9,7 @@ on:
       - 'target/linux/ramips/mt7621/**'
     branches-ignore:
       - master
-  workflow_dispatch:  # Позволяет запускать workflow вручную
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
       - name: Set up OpenWRT build environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential git libpcre3-dev
+          sudo apt-get install -y build-essential git libpcre3-dev libncurses5-dev zlib1g-dev
 
       - name: Update OpenWRT feeds
         run: |
@@ -33,15 +33,14 @@ jobs:
 
       - name: Configure Kernel
         run: |
-          # Используйте конфигурацию по умолчанию или заранее подготовленный .config файл
           make defconfig  # Генерация конфигурации по умолчанию
 
       - name: Build Kernel for mt7621
         run: |
-          make kernel -j$(nproc)  # Сборка только ядра
+          make kernel -j1 V=s | tee build.log  # Сборка с повышенной детализацией
 
       - name: Upload built kernel
         uses: actions/upload-artifact@v3
         with:
           name: kernel
-          path: bin/targets/ramips/mt7621/*.bin  # Укажите путь к вашим скомпилированным файлам
+          path: bin/targets/ramips/mt7621/*.bin
