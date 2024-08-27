@@ -32,7 +32,16 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
+      - name: Configure Kernel
+        run: |
+          make kernel_menuconfig  # Настройка только ядра
+
       - name: Build Kernel for mt7621
         run: |
-          make defconfig  # Используйте стандартную конфигурацию
-          make -j$(nproc)  # Сборка
+          make kernel -j$(nproc)  # Сборка только ядра
+
+      - name: Upload built kernel
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel
+          path: bin/targets/ramips/mt7621/*.bin  # Укажите путь к вашим скомпилированным файлам
