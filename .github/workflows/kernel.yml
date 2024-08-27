@@ -1,42 +1,40 @@
-name: Build Kernel
+name: Build Kernel for mt7621
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/check-kernel-patches.yml'
-      - '.github/workflows/build.yml'
-      - '.github/workflows/kernel.yml'
-      - 'include/kernel*'
-      - 'package/kernel/**'
-      - 'target/linux/**'
+      - 'target/linux/ramips/mt7621/**'
   push:
     paths:
-      - '.github/workflows/check-kernel-patches.yml'
-      - '.github/workflows/build.yml'
-      - '.github/workflows/kernel.yml'
-      - 'include/kernel*'
-      - 'package/kernel/**'
-      - 'target/linux/**'
+      - 'target/linux/ramips/mt7621/**'
     branches-ignore:
       - master
 
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 jobs:
-  build-kernels:
-    name: Build all affected Kernels
-    permissions:
-      contents: read
-      packages: read
-      actions: write
-    secrets:
-      ccache_s3_endpoint: ${{ secrets.CCACHE_S3_ENDPOINT }}
-      ccache_s3_bucket: ${{ secrets.CCACHE_S3_BUCKET }}
-      ccache_s3_access_key: ${{ secrets.CCACHE_S3_ACCESS_KEY }}
-      ccache_s3_secret_key: ${{ secrets.CCACHE_S3_SECRET_KEY }}
-    uses: openwrt/actions-shared-workflows/.github/workflows/kernel.yml@main
+  build-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up OpenWRT build environment
+        run: |
+          # Установите необходимые зависимости
+          sudo apt-get update
+          sudo apt-get install -y build-essential git
+
+      - name: Clone OpenWRT repository
+        run: |
+          git clone https://github.com/openwrt/openwrt.git
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Build Kernel for mt7621
+        run: |
+          cd openwrt
+          make menuconfig  # Настройка конфигурации, выберите mt7621
+          make -j$(nproc)  # Сборка
