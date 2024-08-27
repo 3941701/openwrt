@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # Обновлено до v4
+        uses: actions/checkout@v4  # Используем ваш форк
 
       - name: Set up OpenWRT build environment
         run: |
@@ -27,15 +27,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential git
 
-      - name: Clone OpenWRT repository
+      - name: Update OpenWRT feeds
         run: |
-          git clone https://github.com/openwrt/openwrt.git
-          cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Build Kernel for mt7621
         run: |
-          cd openwrt
           make menuconfig  # Настройка конфигурации, выберите mt7621
           make -j$(nproc)  # Сборка
