@@ -37,10 +37,10 @@ jobs:
 
       - name: Build Kernel for mt7621
         run: |
-          make kernel KBUILD_OUTPUT=/bin -j1 V=s | tee build.log  # Сборка с повышенной детализацией
+          make kernel -j1 V=s | tee build.log  # Сборка с повышенной детализацией
 
       - name: Upload built kernel
         uses: actions/upload-artifact@v3
         with:
           name: kernel
-          path: bin/*.bin
+          path: bin/targets/ramips/mt7621/*.bin
