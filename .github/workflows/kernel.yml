@@ -24,7 +24,7 @@ jobs:
       - name: Set up OpenWRT build environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential git libpcre3-dev libncurses5-dev zlib1g-dev
+          sudo apt-get install -y build-essential git libpcre3-dev libncurses5-dev zlib1g-dev quilt
 
       - name: Update OpenWRT feeds
         run: |
@@ -35,6 +35,23 @@ jobs:
         run: |
           make defconfig  # Генерация конфигурации по умолчанию
 
+      - name: Prepare Kernel for Patching
+        run: |
+          make target/linux/clean V=s QUILT=1
+          make target/linux/prepare V=s QUILT=1
+
+      - name: Create Kernel Patch
+        run: |
+          cd target/linux/ramips/mt7621  # Перейти в каталог с исходным кодом ядра
+          quilt new generic/010-main_code_fix.patch  # Создание нового патча
+          # Здесь вы можете добавить команды для редактирования файлов, если это необходимо
+          quilt refresh  # Обновление патча с изменениями
+
+      - name: Move Patches to Source Tree
+        run: |
+          cd ../../../..
+          make target/linux/update package/index V=s  # Перемещение патчей в основное дерево
+
       - name: Build Kernel for mt7621
         run: |
           make kernel -j1 V=s | tee build.log  # Сборка с повышенной детализацией
@@ -43,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: kernel
-          path: bin/targets/ramips/mt7621/*.bin
+          path: bin/*.bin
