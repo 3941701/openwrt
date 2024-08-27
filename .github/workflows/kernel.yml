@@ -25,7 +25,7 @@ jobs:
         run: |
           # Установите необходимые зависимости
           sudo apt-get update
-          sudo apt-get install -y build-essential git
+          sudo apt-get install -y build-essential git libpcre3-dev
 
       - name: Update OpenWRT feeds
         run: |
@@ -34,5 +34,5 @@ jobs:
 
       - name: Build Kernel for mt7621
         run: |
-          make menuconfig  # Настройка конфигурации, выберите mt7621
+          make defconfig  # Используйте стандартную конфигурацию
           make -j$(nproc)  # Сборка
